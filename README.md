@@ -20,6 +20,8 @@ The server listens on port `3000` by default.
 
 ## Endpoints
 
+I dont know if these endpoints have ratelimits so just incase we set x-forwarded-for and x-real-ip
+
 - `GET /api/aes` - proxies and reformats `https://fortnite-api.com/v2/aes`
 - `GET /uedb/aes` - forwards to `https://uedb.dev/svc/api/v1/fortnite/aes`
 - `GET /uedb/mappings` - forwards to `https://uedb.dev/svc/api/v1/fortnite/mappings`

@@ -4,8 +4,19 @@ const https = require("https");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-function proxyRequest(upstreamUrl, res) {
-    https.get(upstreamUrl.toString(), (apiRes) => {
+function getForwardHeaders(req) {
+    const clientIp = req.headers["x-forwarded-for"]
+        ? `${req.headers["x-forwarded-for"]}, ${req.socket.remoteAddress}`
+        : req.socket.remoteAddress;
+
+    return {
+        "X-Forwarded-For": clientIp,
+        "X-Real-IP": req.ip || clientIp,
+    };
+}
+
+function proxyRequest(upstreamUrl, req, res) {
+    https.get(upstreamUrl.toString(), { headers: getForwardHeaders(req) }, (apiRes) => {
         res.status(apiRes.statusCode || 200);
         Object.entries(apiRes.headers).forEach(([name, value]) => {
             if (value != null) {
@@ -22,7 +33,7 @@ app.get("/api/aes", (req, res) => {
     const upstreamUrl = new URL("https://fortnite-api.com/v2/aes");
     upstreamUrl.search = new URLSearchParams(req.query).toString();
 
-    https.get(upstreamUrl.toString(), (apiRes) => {
+    https.get(upstreamUrl.toString(), { headers: getForwardHeaders(req) }, (apiRes) => {
         let data = "";
         apiRes.on("data", (chunk) => (data += chunk));
         apiRes.on("end", () => {
@@ -49,13 +60,13 @@ app.get("/api/aes", (req, res) => {
 app.get("/uedb/aes", (req, res) => {
     const upstreamUrl = new URL("https://uedb.dev/svc/api/v1/fortnite/aes");
     upstreamUrl.search = new URLSearchParams(req.query).toString();
-    proxyRequest(upstreamUrl, res);
+    proxyRequest(upstreamUrl, req, res);
 });
 
 app.get("/uedb/mappings", (req, res) => {
     const upstreamUrl = new URL("https://uedb.dev/svc/api/v1/fortnite/mappings");
     upstreamUrl.search = new URLSearchParams(req.query).toString();
-    proxyRequest(upstreamUrl, res);
+    proxyRequest(upstreamUrl, req, res);
 });
 
 app.use((req, res) => {
