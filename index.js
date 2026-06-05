@@ -69,6 +69,24 @@ app.get("/uedb/mappings", (req, res) => {
     proxyRequest(upstreamUrl, req, res);
 });
 
+app.get("/", (req, res) => {
+    res.json({
+        name: "FortniteAPI-Proxy",
+        description: "A simple Express proxy for Fortnite AES and mapping endpoints",
+        endpoints: [
+            "GET /",
+            "GET /health",
+            "GET /api/aes",
+            "GET /uedb/aes",
+            "GET /uedb/mappings"
+        ]
+    });
+});
+
+app.get("/health", (req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 app.use((req, res) => {
     res.status(404).send("Not found");
 });
