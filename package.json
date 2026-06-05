@@ -1,0 +1,14 @@
+{
+    "name": "fortniteapi-proxy",
+    "version": "1.0.0",
+    "description": "Simple proxy for Fortnite API AES endpoint.",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^5.2.1"
+    }
+}
